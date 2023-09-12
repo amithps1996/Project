@@ -1,0 +1,63 @@
+pipeline {
+    agent any
+    tools {
+        maven 'mvn m1'
+    }
+    stages {
+        stage ('checkout') {
+        steps {
+            git branch: 'main', url: 'https://github.com/amithps1996/Project.git'
+        }
+        }
+        stage ('test') {
+            steps {
+                    sh 'mvn test'
+                }
+            }
+             
+    stage ('build') {
+    steps {
+            sh 'mvn clean install'
+        }
+        }
+   stage ('sonartest') {
+       steps {
+             withSonarQubeEnv('amithsonar') { 
+                 sh 'mvn clean install sonar:sonar'
+             }
+             
+       }
+   }
+        stage("artifactupload-frontend"){
+            steps{
+                rtUpload(
+                    serverId: 'amithjfrog',
+                    spec: '''{
+                        "files": [
+                            {
+                                "pattern": "frontend/*/*.jar",
+                                "target": "amithjfrog/"
+                            }
+                        ]
+                    }'''
+                )
+            }
+        }   
+        stage("artifactupload-backend"){
+            steps{
+                rtUpload(
+                    serverId: 'amithjfrog',
+                    spec: '''{
+                        "files": [
+                            {
+                                "pattern": "backend/*/*.jar",
+                                "target": "amithjfrog/"
+                            }
+                        ]
+                    }'''
+                )
+            }
+        }   
+        
+    }
+}
