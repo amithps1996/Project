@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: frontend
+  name: frontend
+  namespace: amith
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - image: amithps1996/frontend
+        name: frontend
+        ports:
+        - containerPort: 8085
+        env:
+          - name: BACKEND
+            value: "http://backend:8086"
+        resources: {}
+status: {}
